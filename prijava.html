@@ -10,6 +10,7 @@
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; box-sizing: border-box; }
         button { width: 100%; padding: 12px; margin-top: 15px; border-radius: 5px; border: none; background: #ff4500; color: white; font-weight: bold; cursor: pointer; }
         .prebaci { margin-top: 15px; font-size: 14px; color: #bbb; cursor: pointer; }
+        #link { color: #ff4500; text-decoration: underline; }
         a { color:gray; text-decoration:none; font-size:12px; display:block; margin-top:10px; }
     </style>
 </head>
@@ -20,16 +21,16 @@
     <input type="email" id="email" placeholder="Email (npr. test@test.com)">
     <input type="password" id="lozinka" placeholder="Lozinka (min. 6 karaktera)">
     <button id="glavnoDugme">Kreni!</button>
-    <p class="prebaci" id="prebacivac">Nemaš nalog? <span id="link" style="color:#ff4500; text-decoration:underline;">Registruj se</span></p>
+    <p class="prebaci" id="prebacivac">Nemaš nalog? <span id="link">Registruj se</span></p>
     <a href="index.html">nazad</a>
 </div>
 
-<!-- UCITAVANJE FIREBASE-A NA KRAJU -->
-<script src="https://www.gstatic.com"></script>
-<script src="https://www.gstatic.com"></script>
+<script type="module">
+  // Moderni nacin ucitavanja koji GitHub Pages voli
+  import { initializeApp } from "https://www.gstatic.com";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com";
 
-<script>
-  var firebaseConfig = {
+  const firebaseConfig = {
     apiKey: "AIzaSyDN3hVaY5Xnxno782yByLj1br1QJgGsd5k",
     authDomain: "asmini-c09d2.firebaseapp.com",
     projectId: "asmini-c09d2",
@@ -38,42 +39,36 @@
     appId: "1:243393494105:web:b046960228eb4fd6930548"
   };
 
-  var mod = "login";
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  let mod = "login";
 
-  // Čekamo da se sve učita
-  window.onload = function() {
-      if (typeof firebase !== 'undefined') {
-          firebase.initializeApp(firebaseConfig);
-          console.log("Firebase uspesno povezan!");
+  // Dugme za promenu moda
+  document.getElementById("prebacivac").onclick = () => {
+    mod = (mod === "login") ? "register" : "login";
+    document.getElementById("naslov").innerText = (mod === "login") ? "Prijava" : "Registracija";
+    document.getElementById("link").innerText = (mod === "login") ? "Registruj se" : "Prijavi se";
+  };
+
+  // Glavno dugme za akciju
+  document.getElementById("glavnoDugme").onclick = async () => {
+    const email = document.getElementById("email").value;
+    const lozinka = document.getElementById("lozinka").value;
+
+    if(!email || !lozinka) { alert("Popuni sva polja!"); return; }
+
+    try {
+      if (mod === "register") {
+        await createUserWithEmailAndPassword(auth, email, lozinka);
+        alert("USPELO JE! Registracija završena.");
       } else {
-          alert("Problem sa internetom: Firebase se nije ucitao. Pokusaj da osvezis stranicu.");
+        await signInWithEmailAndPassword(auth, email, lozinka);
+        alert("USPELO JE! Ulogovan si.");
+        window.location.href = "index.html";
       }
-
-      // Rucno vezivanje klikova (sigurnije od onclick u HTML-u)
-      document.getElementById("prebacivac").onclick = function() {
-          var naslov = document.getElementById("naslov");
-          var link = document.getElementById("link");
-          mod = (mod === "login") ? "register" : "login";
-          naslov.innerText = (mod === "login") ? "Prijava" : "Registracija";
-          link.innerText = (mod === "login") ? "Registruj se" : "Prijavi se";
-      };
-
-      document.getElementById("glavnoDugme").onclick = function() {
-          var email = document.getElementById("email").value;
-          var lozinka = document.getElementById("lozinka").value;
-
-          if (!email.includes("@")) { alert("Unesi pravu email adresu!"); return; }
-
-          if (mod === "register") {
-              firebase.auth().createUserWithEmailAndPassword(email, lozinka)
-                  .then(function() { alert("BRAVO! Registracija uspela. Sad se prijavi."); })
-                  .catch(function(err) { alert("Greska: " + err.message); });
-          } else {
-              firebase.auth().signInWithEmailAndPassword(email, lozinka)
-                  .then(function() { alert("Uspešan Login!"); window.location.href = "index.html"; })
-                  .catch(function(err) { alert("Greska: " + err.message); });
-          }
-      };
+    } catch (error) {
+      alert("Greska: " + error.message);
+    }
   };
 </script>
 

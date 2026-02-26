@@ -32,9 +32,10 @@
 </div>
 
 <script type="module">
+  // Koristimo CDN koji je stabilniji za GitHub Pages
   import { initializeApp } from "https://www.gstatic.com";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com";
-    
+
   const firebaseConfig = {
     apiKey: "AIzaSyDN3hVaY5Xnxno782yByLj1br1QJgGsd5k",
     authDomain: "asmini-c09d2.firebaseapp.com",
@@ -48,33 +49,41 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
+  // REŠENJE ZA "ReferenceError": Moramo rucno da ih dodelimo "window" objektu
+  window.mod = "login";
+
   window.izmeniFormu = function() {
       const naslov = document.getElementById("naslov");
       const link = document.getElementById("link");
       window.mod = (window.mod === "login") ? "register" : "login";
       naslov.innerText = (window.mod === "login") ? "Prijava" : "Registracija";
       link.innerText = (window.mod === "login") ? "Registruj se" : "Prijavi se";
-  }
-  window.mod = "login";
+  };
 
   window.akcija = function() {
       const email = document.getElementById("korisnik").value;
       const lozinka = document.getElementById("lozinka").value;
 
+      if (!email.includes("@")) {
+          alert("Molim te unesi email (npr. test@gmail.com) jer Firebase to zahteva!");
+          return;
+      }
+
       if (window.mod === "register") {
           createUserWithEmailAndPassword(auth, email, lozinka)
-              .then(() => alert("Uspešna registracija! Sada se možeš ulogovati."))
-              .catch((error) => alert("Greška: " + error.message));
+              .then(() => alert("Uspešna registracija! Probaj sada da se uloguješ."))
+              .catch((error) => alert("Greška pri registraciji: " + error.message));
       } else {
           signInWithEmailAndPassword(auth, email, lozinka)
               .then(() => {
-                  alert("Ulogovan si! Prebacujem te na početnu...");
+                  alert("Uspešan Login! Vraćam te na početnu.");
                   window.location.href = "index.html";
               })
-              .catch((error) => alert("Greška: " + error.message));
+              .catch((error) => alert("Greška: Proveri email/lozinku."));
       }
-  }
+  };
 </script>
+
 
 
 </body>

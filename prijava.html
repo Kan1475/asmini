@@ -5,71 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AS-Mini | Prijava</title>
     <style>
-        body { background-color: #1a1a1a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .forma-kontejner { background: #252525; padding: 30px; border-radius: 15px; border: 2px solid #ff4500; width: 320px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; margin-top: 15px; border-radius: 5px; border: none; background: #ff4500; color: white; font-weight: bold; cursor: pointer; }
+        body { background-color: #1a1a1a; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .forma-kontejner { background: #252525; padding: 30px; border-radius: 15px; border: 2px solid #ff4500; box-shadow: 0px 0px 20px rgba(255, 69, 0, 0.2); width: 320px; text-align: center; }
+        h2 { color: #ff4500; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; box-sizing: border-box; outline: none; }
+        input:focus { border: 1px solid #ff4500; }
+        button { width: 100%; padding: 12px; margin-top: 15px; border-radius: 5px; border: none; background: #ff4500; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #e63e00; transform: scale(1.02); }
         .prebaci { margin-top: 15px; font-size: 14px; color: #bbb; cursor: pointer; }
-        #link { color: #ff4500; text-decoration: underline; }
-        a { color:gray; text-decoration:none; font-size:12px; display:block; margin-top:10px; }
+        #link { color: #ff4500; text-decoration: underline; font-weight: bold; }
+        a.nazad { color: #888; text-decoration: none; display: block; margin-top: 15px; font-size: 13px; }
     </style>
 </head>
 <body>
 
 <div class="forma-kontejner">
     <h2 id="naslov">Prijava</h2>
-    <input type="email" id="email" placeholder="Email (npr. test@test.com)">
-    <input type="password" id="lozinka" placeholder="Lozinka (min. 6 karaktera)">
-    <button id="glavnoDugme">Kreni!</button>
-    <p class="prebaci" id="prebacivac">Nemaš nalog? <span id="link">Registruj se</span></p>
-    <a href="index.html">nazad</a>
+    
+    <div id="polja">
+        <input type="text" id="korisnik" placeholder="Korisničko ime / Email">
+        <input type="password" id="lozinka" placeholder="Lozinka">
+        <button onclick="akcija()">Kreni!</button>
+    </div>
+
+    <p class="prebaci" onclick="izmeniMod()">Nemaš nalog? <span id="link">Registruj se</span></p>
+    <a href="index.html" class="nazad">← Nazad na početnu</a>
 </div>
 
-<script type="module">
-  // Moderni nacin ucitavanja koji GitHub Pages voli
-  import { initializeApp } from "https://www.gstatic.com";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com";
+<script>
+    // Cista JS logika bez spoljnih biblioteka
+    var trenutniMod = "login";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDN3hVaY5Xnxno782yByLj1br1QJgGsd5k",
-    authDomain: "asmini-c09d2.firebaseapp.com",
-    projectId: "asmini-c09d2",
-    storageBucket: "asmini-c09d2.firebasestorage.app",
-    messagingSenderId: "243393494105",
-    appId: "1:243393494105:web:b046960228eb4fd6930548"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  let mod = "login";
-
-  // Dugme za promenu moda
-  document.getElementById("prebacivac").onclick = () => {
-    mod = (mod === "login") ? "register" : "login";
-    document.getElementById("naslov").innerText = (mod === "login") ? "Prijava" : "Registracija";
-    document.getElementById("link").innerText = (mod === "login") ? "Registruj se" : "Prijavi se";
-  };
-
-  // Glavno dugme za akciju
-  document.getElementById("glavnoDugme").onclick = async () => {
-    const email = document.getElementById("email").value;
-    const lozinka = document.getElementById("lozinka").value;
-
-    if(!email || !lozinka) { alert("Popuni sva polja!"); return; }
-
-    try {
-      if (mod === "register") {
-        await createUserWithEmailAndPassword(auth, email, lozinka);
-        alert("USPELO JE! Registracija završena.");
-      } else {
-        await signInWithEmailAndPassword(auth, email, lozinka);
-        alert("USPELO JE! Ulogovan si.");
-        window.location.href = "index.html";
-      }
-    } catch (error) {
-      alert("Greska: " + error.message);
+    function izmeniMod() {
+        var naslov = document.getElementById("naslov");
+        var link = document.getElementById("link");
+        
+        if (trenutniMod === "login") {
+            naslov.innerText = "Registracija";
+            link.innerText = "Prijavi se";
+            trenutniMod = "register";
+        } else {
+            naslov.innerText = "Prijava";
+            link.innerText = "Registruj se";
+            trenutniMod = "login";
+        }
     }
-  };
+
+    function akcija() {
+        var user = document.getElementById("korisnik").value;
+        var pass = document.getElementById("lozinka").value;
+
+        if (!user || !pass) {
+            alert("Popuni sva polja, bre!");
+            return;
+        }
+
+        if (trenutniMod === "register") {
+            alert("SIMULACIJA: Korisnik '" + user + "' je uspešno registrovan u tvojoj lokalnoj memoriji!");
+        } else {
+            alert("SIMULACIJA: Dobrodošao nazad, " + user + "!");
+            window.location.href = "index.html";
+        }
+    }
 </script>
 
 </body>

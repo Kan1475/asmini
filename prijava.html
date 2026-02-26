@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AS-Mini | Prijava</title>
-    
-    <!-- Redosled je jako bitan ovde -->
-    <script src="https://www.gstatic.com"></script>
-    <script src="https://www.gstatic.com"></script>
-
     <style>
         body { background-color: #1a1a1a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .forma-kontejner { background: #252525; padding: 30px; border-radius: 15px; border: 2px solid #ff4500; width: 320px; text-align: center; }
@@ -24,13 +19,16 @@
     <h2 id="naslov">Prijava</h2>
     <input type="email" id="email" placeholder="Email (npr. test@test.com)">
     <input type="password" id="lozinka" placeholder="Lozinka (min. 6 karaktera)">
-    <button onclick="izvrsiAkciju()">Kreni!</button>
-    <p class="prebaci" onclick="promeniMod()">Nemaš nalog? <span id="link" style="color:#ff4500; text-decoration:underline;">Registruj se</span></p>
+    <button id="glavnoDugme">Kreni!</button>
+    <p class="prebaci" id="prebacivac">Nemaš nalog? <span id="link" style="color:#ff4500; text-decoration:underline;">Registruj se</span></p>
     <a href="index.html">nazad</a>
 </div>
 
+<!-- UCITAVANJE FIREBASE-A NA KRAJU -->
+<script src="https://www.gstatic.com"></script>
+<script src="https://www.gstatic.com"></script>
+
 <script>
-  // Tvoja konfiguracija
   var firebaseConfig = {
     apiKey: "AIzaSyDN3hVaY5Xnxno782yByLj1br1QJgGsd5k",
     authDomain: "asmini-c09d2.firebaseapp.com",
@@ -40,43 +38,44 @@
     appId: "1:243393494105:web:b046960228eb4fd6930548"
   };
 
-  // Funkcija koja čeka da se Firebase učita
-  function inicijalizuj() {
-      if (typeof firebase !== 'undefined') {
-          firebase.initializeApp(firebaseConfig);
-          console.log("Firebase je spreman!");
-      } else {
-          setTimeout(inicijalizuj, 500); // Probaj ponovo za pola sekunde
-      }
-  }
-  inicijalizuj();
-
   var mod = "login";
 
-  window.promeniMod = function() {
-      var naslov = document.getElementById("naslov");
-      var link = document.getElementById("link");
-      mod = (mod === "login") ? "register" : "login";
-      naslov.innerText = (mod === "login") ? "Prijava" : "Registracija";
-      link.innerText = (mod === "login") ? "Registruj se" : "Prijavi se";
-  }
-
-  window.izvrsiAkciju = function() {
-      var email = document.getElementById("email").value;
-      var lozinka = document.getElementById("lozinka").value;
-
-      if (!email.includes("@")) { alert("Unesi validan email!"); return; }
-
-      if (mod === "register") {
-          firebase.auth().createUserWithEmailAndPassword(email, lozinka)
-              .then(function() { alert("Uspešna registracija! Sad se prijavi."); })
-              .catch(function(err) { alert("Greška: " + err.message); });
+  // Čekamo da se sve učita
+  window.onload = function() {
+      if (typeof firebase !== 'undefined') {
+          firebase.initializeApp(firebaseConfig);
+          console.log("Firebase uspesno povezan!");
       } else {
-          firebase.auth().signInWithEmailAndPassword(email, lozinka)
-              .then(function() { alert("Ulogovan si!"); window.location.href = "index.html"; })
-              .catch(function(err) { alert("Greška: " + err.message); });
+          alert("Problem sa internetom: Firebase se nije ucitao. Pokusaj da osvezis stranicu.");
       }
-  }
+
+      // Rucno vezivanje klikova (sigurnije od onclick u HTML-u)
+      document.getElementById("prebacivac").onclick = function() {
+          var naslov = document.getElementById("naslov");
+          var link = document.getElementById("link");
+          mod = (mod === "login") ? "register" : "login";
+          naslov.innerText = (mod === "login") ? "Prijava" : "Registracija";
+          link.innerText = (mod === "login") ? "Registruj se" : "Prijavi se";
+      };
+
+      document.getElementById("glavnoDugme").onclick = function() {
+          var email = document.getElementById("email").value;
+          var lozinka = document.getElementById("lozinka").value;
+
+          if (!email.includes("@")) { alert("Unesi pravu email adresu!"); return; }
+
+          if (mod === "register") {
+              firebase.auth().createUserWithEmailAndPassword(email, lozinka)
+                  .then(function() { alert("BRAVO! Registracija uspela. Sad se prijavi."); })
+                  .catch(function(err) { alert("Greska: " + err.message); });
+          } else {
+              firebase.auth().signInWithEmailAndPassword(email, lozinka)
+                  .then(function() { alert("Uspešan Login!"); window.location.href = "index.html"; })
+                  .catch(function(err) { alert("Greska: " + err.message); });
+          }
+      };
+  };
 </script>
+
 </body>
 </html>

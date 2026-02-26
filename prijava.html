@@ -31,27 +31,51 @@
     <a href="index.html">← Nazad na početnu</a>
 </div>
 
-<script>
-    let mod = "login";
-    function izmeniFormu() {
-        const naslov = document.getElementById("naslov");
-        const link = document.getElementById("link");
-        if (mod === "login") {
-            naslov.innerText = "Registracija";
-            link.innerText = "Prijavi se";
-            mod = "register";
-        } else {
-            naslov.innerText = "Prijava";
-            link.innerText = "Registruj se";
-            mod = "login";
-        }
-    }
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com";
+    
+  const firebaseConfig = {
+    apiKey: "AIzaSyDN3hVaY5Xnxno782yByLj1br1QJgGsd5k",
+    authDomain: "asmini-c09d2.firebaseapp.com",
+    projectId: "asmini-c09d2",
+    storageBucket: "asmini-c09d2.firebasestorage.app",
+    messagingSenderId: "243393494105",
+    appId: "1:243393494105:web:b046960228eb4fd6930548",
+    measurementId: "G-72FKTG8T98"
+  };
 
-    function akcija() {
-        const user = document.getElementById("korisnik").value;
-        alert("Dugme radi! Trenutni mod: " + mod + " za korisnika: " + user + ". Sledeći korak je povezivanje sa Firebase bazom!");
-    }
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.izmeniFormu = function() {
+      const naslov = document.getElementById("naslov");
+      const link = document.getElementById("link");
+      window.mod = (window.mod === "login") ? "register" : "login";
+      naslov.innerText = (window.mod === "login") ? "Prijava" : "Registracija";
+      link.innerText = (window.mod === "login") ? "Registruj se" : "Prijavi se";
+  }
+  window.mod = "login";
+
+  window.akcija = function() {
+      const email = document.getElementById("korisnik").value;
+      const lozinka = document.getElementById("lozinka").value;
+
+      if (window.mod === "register") {
+          createUserWithEmailAndPassword(auth, email, lozinka)
+              .then(() => alert("Uspešna registracija! Sada se možeš ulogovati."))
+              .catch((error) => alert("Greška: " + error.message));
+      } else {
+          signInWithEmailAndPassword(auth, email, lozinka)
+              .then(() => {
+                  alert("Ulogovan si! Prebacujem te na početnu...");
+                  window.location.href = "index.html";
+              })
+              .catch((error) => alert("Greška: " + error.message));
+      }
+  }
 </script>
+
 
 </body>
 </html>

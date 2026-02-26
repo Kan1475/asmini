@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS-Mini | Prijava</title>
+    <style>
+        body { background-color: #1a1a1a; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .forma-kontejner { background: #252525; padding: 30px; border-radius: 15px; border: 2px solid #ff4500; box-shadow: 0px 0px 20px rgba(255, 69, 0, 0.2); width: 320px; text-align: center; }
+        h2 { color: #ff4500; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin-top: 15px; border-radius: 5px; border: none; background: #ff4500; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #e63e00; transform: scale(1.02); }
+        .prebaci { margin-top: 15px; font-size: 14px; color: #bbb; cursor: pointer; }
+        .prebaci span { color: #ff4500; text-decoration: underline; }
+        a { color: #888; text-decoration: none; display: block; margin-top: 15px; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="forma-kontejner" id="box">
+    <h2 id="naslov">Prijava</h2>
+    
+    <div id="polja">
+        <input type="text" id="korisnik" placeholder="Korisničko ime">
+        <input type="password" id="lozinka" placeholder="Lozinka">
+        <button onclick="akcija()">Kreni!</button>
+    </div>
+
+    <p class="prebaci" onclick="izmeniFormu()">Nemaš nalog? <span id="link">Registruj se</span></p>
+    <a href="index.html">← Nazad na početnu</a>
+</div>
+
+<script>
+    let mod = "login";
+    function izmeniFormu() {
+        const naslov = document.getElementById("naslov");
+        const link = document.getElementById("link");
+        if (mod === "login") {
+            naslov.innerText = "Registracija";
+            link.innerText = "Prijavi se";
+            mod = "register";
+        } else {
+            naslov.innerText = "Prijava";
+            link.innerText = "Registruj se";
+            mod = "login";
+        }
+    }
+
+    function akcija() {
+        const user = document.getElementById("korisnik").value;
+        alert("Dugme radi! Trenutni mod: " + mod + " za korisnika: " + user + ". Sledeći korak je povezivanje sa Firebase bazom!");
+    }
+</script>
+
+</body>
+</html>
